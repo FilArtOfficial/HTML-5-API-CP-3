@@ -11,7 +11,6 @@ let data = [
     { id: 2, name: 'Item 2' },
 ];
 
-// Serve static files (если у вас есть статические файлы, например, index.html)
 app.use(express.static('public'));
 
 // Read
@@ -47,9 +46,8 @@ app.delete('/api/data/:id', (req, res) => {
     res.sendStatus(204);
 });
 
-// Обработчик для корневого пути
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html'); // Замените 'public/index.html' на путь к вашему файлу index.html
+    res.sendFile(__dirname + 'index.html');
 });
 
 app.listen(port, () => {
