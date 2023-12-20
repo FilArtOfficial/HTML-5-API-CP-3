@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD App</title>
+</head>
+<body>
+
+    <h1>CRUD App</h1>
+
+    <form id="crudForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <ul id="list"></ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('crudForm');
+            const list = document.getElementById('list');
+
+            // Fetch data on page load
+            fetchData();
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const name = document.getElementById('name').value;
+
+                // Create
+                if (name) {
+                    createData(name);
+                }
+            });
+
+            function fetchData() {
+                // Read
+                fetch('/api/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        list.innerHTML = '';
+                        data.forEach(item => {
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `${item.name} <button onclick="updateData(${item.id})">Update</button> <button onclick="deleteData(${item.id})">Delete</button>`;
+                            list.appendChild(listItem);
+                        });
+                    });
+            }
+
+            function createData(name) {
+                // Create
+                fetch('/api/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name }),
+                })
+                .then(() => {
+                    fetchData();
+                    form.reset();
+                });
+            }
+
+            window.updateData = function (id) {
+                const newName = prompt('Enter the new name:');
+                if (newName) {
+                    // Update
+                    fetch(`/api/data/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name: newName }),
+                    })
+                    .then(() => fetchData());
+                }
+            };
+
+            window.deleteData = function (id) {
+                // Delete
+                fetch(`/api/data/${id}`, {
+                    method: 'DELETE',
+                })
+                .then(() => fetchData());
+            };
+        });
+    </script>
+
+</body>
+</html>
